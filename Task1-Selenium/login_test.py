@@ -6,39 +6,65 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
-# Path to ChromeDriver
-chrome_driver_path = "D:\\Task1-Selenium\\chromedriver-win64\\chromedriver.exe"
+chrome_driver_path = r"D:\Task1-Selenium\chromedriver-win64\chromedriver.exe"
+
+print("Starting script...")  
 
 @pytest.fixture(scope="session")
 def driver():
     """ Setup Chrome WebDriver (Runs once per session) """
+    print("Initializing ChromeDriver...")
+    service = Service(chrome_driver_path)
+    
+    try:
+        driver = webdriver.Chrome(service=service)
+        driver.maximize_window()
+        print("ChromeDriver started successfully!")
+    except Exception as e:
+        print(f"Error starting ChromeDriver: {e}")
+        return None  # Return None if ChromeDriver fails
+    
+    yield driver
+    print("Closing ChromeDriver...")
+    driver.quit()
+
+def test_login_and_navigation():
+    """ Perform login and navigation in one test session """
+    
     service = Service(chrome_driver_path)
     driver = webdriver.Chrome(service=service)
     driver.maximize_window()
-    yield driver  # Provide the driver to the test function
-    driver.quit()  # Close browser at the end of the test session
-
-def test_login_and_navigation(driver):
-    """ Perform login and navigation in one test session """
     
-    # Open website
+    print("Opening SauceDemo website...")
     driver.get("https://www.saucedemo.com/")
-    print("Opened SauceDemo")
+    
+    try:
+        print("Entering username...")
+        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "user-name"))).send_keys("standard_user")
 
-    # Perform login
-    driver.find_element(By.ID, "user-name").send_keys("standard_user")
-    driver.find_element(By.ID, "password").send_keys("secret_sauce")
-    driver.find_element(By.ID, "login-button").click()
-    print("Logged in")
+        print("Entering password...")
+        driver.find_element(By.ID, "password").send_keys("secret_sauce")
 
-    # Wait for menu button to be clickable
-    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "react-burger-menu-btn"))).click()
-    print("Opened menu")
+        print("Clicking login button...")
+        driver.find_element(By.ID, "login-button").click()
 
-    # Click on 'All Items' link
-    WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "inventory_sidebar_link"))).click()
-    print("Navigated to inventory page")
+        print("Waiting for menu button...")
+        WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.ID, "react-burger-menu-btn"))).click()
 
-    # Verify navigation
-    assert "inventory" in driver.current_url
-    print("Navigation successful!")
+        print("Clicking 'All Items'...")
+        WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.ID, "inventory_sidebar_link"))).click()
+
+        print("Checking navigation success...")
+        assert "inventory" in driver.current_url
+        print("Navigation successful!")
+
+    except Exception as e:
+        print("Error occurred:", e)
+    
+    driver.quit()  # Close the browser
+
+# **Manually Call the Function**
+if __name__ == "__main__":
+    test_login_and_navigation()
+
+print("Script execution completed.") 
