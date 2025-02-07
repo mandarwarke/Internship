@@ -35,7 +35,7 @@ Ensure you have the following installed before running the script:
 ## Running the Test Script
 To execute the Selenium test, use the following command:
 ```sh
-pytest test_login.py --html=report.html
+pytest login_test.py --html=report.html
 ```
 This will run the test and generate an HTML report.
 
