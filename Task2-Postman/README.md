@@ -53,6 +53,6 @@ We used [ReqRes](https://reqres.in/) as a public API for testing authentication 
 
 ## Deliverables
 
-- **Postman Collection**: `CodTech-APITests.postman_collection.json`
+- **Postman Collection**: `CodTech-APITests.json`
 - **Test Results**: Available in `TestResults.md`
 - **Documentation**: This `README.md` file
